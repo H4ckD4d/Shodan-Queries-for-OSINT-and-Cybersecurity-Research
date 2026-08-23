@@ -1,0 +1,60 @@
+name: Query intent proposal
+description: Propose a new defensive, authorization-bound query intent or vendor adapter improvement.
+title: "[Query Intent] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping build **h4ckd4d Internet Exposure Query Atlas**.
+
+        Original creator, project owner, and primary maintainer: **Chris Cruz | h4ckd4d**.
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Defensive objective
+      description: What authorized security or asset-inventory question should this intent answer?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope / authorization model
+      description: Describe the type of owned or explicitly authorized assets this intent expects.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: vendors
+    attributes:
+      label: Platforms
+      options:
+        - label: Shodan
+        - label: FOFA
+        - label: BinaryEdge
+        - label: Future / other platform requiring primary-source review
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Primary references
+      description: Link vendor-owned documentation or API references supporting the syntax/semantics.
+    validations:
+      required: true
+
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Known semantic differences or limitations
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Responsible-use confirmation
+      options:
+        - label: I will use only documentation-safe or explicitly authorized examples and will not include sensitive third-party target data.
+          required: true

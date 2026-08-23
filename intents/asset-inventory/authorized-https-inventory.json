@@ -1,0 +1,37 @@
+{
+  "id": "H4D-QRY-0001",
+  "objective": "authorized_https_inventory",
+  "scope_required": true,
+  "authorization_reference": "documentation-example",
+  "constraints": {
+    "network": "203.0.113.0/24",
+    "port": 443,
+    "tls": true
+  },
+  "adapters": [
+    {
+      "vendor": "shodan",
+      "confidence": "validated",
+      "representation": "net:\"203.0.113.0/24\" port:443 has_ssl:true",
+      "validated_at": "2026-08-23",
+      "source": "https://developer.shodan.io/api",
+      "notes": "Core filter:value syntax and filter discovery are documented by Shodan; use only within authorized scope."
+    },
+    {
+      "vendor": "fofa",
+      "confidence": "partial",
+      "representation": "ip=\"203.0.113.0/24\" && port=\"443\"",
+      "validated_at": "2026-08-23",
+      "source": "https://en.fofa.info/api",
+      "notes": "Basic IP/port syntax is represented conservatively. TLS equivalence is intentionally not asserted in this v1 intent."
+    },
+    {
+      "vendor": "binaryedge",
+      "confidence": "experimental",
+      "representation": "UNPUBLISHED: stable cross-platform search translation requires additional primary-source validation",
+      "validated_at": "2026-08-23",
+      "source": "https://docs.binaryedge.io/",
+      "notes": "BinaryEdge public documentation strongly describes schemas and modules; v1 does not publish an executable search translation for this intent."
+    }
+  ]
+}

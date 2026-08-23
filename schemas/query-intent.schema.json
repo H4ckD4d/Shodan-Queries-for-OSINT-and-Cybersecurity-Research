@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/h4ckd4d/Shodan-Queries-for-OSINT-and-Cybersecurity-Research/schemas/query-intent.schema.json",
+  "title": "h4ckd4d Internet Exposure Query Intent",
+  "type": "object",
+  "required": ["id", "objective", "scope_required", "constraints", "adapters"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^H4D-QRY-[0-9]{4}$"},
+    "objective": {"type": "string", "minLength": 3},
+    "scope_required": {"const": true},
+    "authorization_reference": {"type": ["string", "null"]},
+    "constraints": {
+      "type": "object",
+      "properties": {
+        "organization": {"type": "string"},
+        "network": {"type": "string"},
+        "domain": {"type": "string"},
+        "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "tls": {"type": "boolean"}
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "adapters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["vendor", "confidence", "representation", "validated_at", "source"],
+        "properties": {
+          "vendor": {"enum": ["shodan", "fofa", "binaryedge"]},
+          "confidence": {"enum": ["validated", "partial", "experimental"]},
+          "representation": {"type": "string"},
+          "validated_at": {"type": "string", "format": "date"},
+          "source": {"type": "string"},
+          "notes": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

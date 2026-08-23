@@ -4,20 +4,38 @@
 
 **h4ckd4d Internet Exposure Query Atlas** is a defensive, vendor-aware query-intelligence project for translating an authorized Internet-exposure research objective into documented query patterns for public Internet search platforms.
 
-The project is designed to complement **h4ckd4d Internet Exposure Intelligence** and **h4ckd4d Detection Engineering** by creating a portable, analyst-readable layer between defensive research intent and platform-specific query syntax.
+The project complements **h4ckd4d Internet Exposure Intelligence** and **h4ckd4d Detection Engineering** by creating a portable, analyst-readable layer between defensive research intent and platform-specific syntax.
 
-> **Authorized use only:** Query examples must be limited to assets you own, administer, or are explicitly authorized to assess. Documentation-safe examples use reserved domains, reserved IP ranges, or fictional organizations.
+> **Authorized use only:** Query examples must be limited to assets you own, administer, or are explicitly authorized to assess. Repository examples use reserved domains, reserved IP ranges, or fictional organizations.
 
-## Core idea
+## Project status
+
+**Milestone:** `1.0.0-rc.1`  
+**Reference review:** August 23, 2026  
+**Owner:** Chris Cruz | h4ckd4d
+
+Current adapter posture:
+
+| Platform | Confidence | v1 posture |
+| --- | --- | --- |
+| Shodan | Validated core | Core `filter:value` semantics and API validation mechanisms documented. |
+| FOFA | Partial | Conservative IP/port representation; unsupported equivalence is intentionally omitted. |
+| BinaryEdge | Experimental | No executable cross-platform translation published until primary-source semantics are sufficiently validated. |
+
+## Core architecture
 
 ```text
 Defensive Research Objective
+          ↓
+Authorization Reference
           ↓
 Authorized Scope
           ↓
 Vendor-Neutral Query Intent
           ↓
-Query Translation
+Semantic Validation
+          ↓
+Vendor Adapter
           ↓
 ┌─────────┼──────────┬────────────┐
 │         │          │            │
@@ -27,115 +45,128 @@ Shodan   FOFA    BinaryEdge    Future adapters
           ↓
 Analyst Review
           ↓
-Normalized Exposure Context
+Exposure Observation
+          ↓
+Attribution / Validation
 ```
 
-The Atlas does **not** treat equivalent-looking vendor filters as semantically identical. Every adapter must document differences, limitations, plan/API requirements, and confidence in the translation.
+The Atlas does **not** treat equivalent-looking filters as automatically equivalent. Every adapter records translation confidence, limitations, primary references, and review date.
 
-## Initial platform tracks
+## First query intent
 
-- **Shodan** — Internet service and banner telemetry.
-- **FOFA** — Internet asset and fingerprint search syntax.
-- **BinaryEdge** — Internet exposure and service intelligence syntax.
-- **Future adapters** — additional platforms only after their syntax and terms can be validated from primary documentation.
+`H4D-QRY-0001` models **authorized HTTPS inventory** using the documentation-only network `203.0.113.0/24`.
+
+- [`intents/asset-inventory/authorized-https-inventory.json`](intents/asset-inventory/authorized-https-inventory.json)
+- [`catalog/query-catalog.json`](catalog/query-catalog.json)
+- [`schemas/query-intent.schema.json`](schemas/query-intent.schema.json)
+
+The Shodan representation is fully documented for the selected fields, FOFA remains partial, and BinaryEdge is deliberately unpublished as executable syntax in v1.
 
 ## Professional query standard
 
-Every maintained query pattern should document:
+Every maintained query intent should document:
 
 1. Defensive objective.
 2. Authorized scope requirement.
 3. Vendor-neutral intent.
-4. Platform-specific syntax.
-5. Filters or fields used.
-6. Expected result.
+4. Platform-specific representation.
+5. Fields or filters used.
+6. Expected observation.
 7. What the query does **not** prove.
-8. Known semantic differences across vendors.
-9. False-positive / attribution considerations.
-10. Validation source and review date.
+8. Semantic differences across vendors.
+9. False-positive and attribution considerations.
+10. Primary validation source, confidence, and review date.
 
-## Repository roadmap
+See [`docs/query-standard.md`](docs/query-standard.md).
+
+## Repository structure
 
 ```text
-README.md
-DEVELOPERS.md
-CONTRIBUTING.md
-SECURITY.md
-CHANGELOG.md
-LICENSE
-
-docs/
-├── architecture.md
-├── query-standard.md
-├── scope-and-authorization.md
-└── vendor-semantics.md
-
-intents/
-├── asset-inventory/
-├── web-services/
-├── tls-certificates/
-├── cloud-inventory/
-└── remote-access/
-
-adapters/
-├── shodan/
-├── fofa/
-└── binaryedge/
-
-schemas/
-└── query-intent.schema.json
-
-catalog/
-└── query-catalog.json
-
-scripts/
-└── validate_catalog.py
+.
+├── README.md
+├── DEVELOPERS.md
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── CHANGELOG.md
+├── LICENSE
+├── docs/
+│   ├── architecture.md
+│   ├── query-standard.md
+│   ├── scope-and-authorization.md
+│   └── vendor-semantics.md
+├── intents/
+│   └── asset-inventory/
+├── adapters/
+│   ├── shodan/
+│   ├── fofa/
+│   └── binaryedge/
+├── schemas/
+│   └── query-intent.schema.json
+├── catalog/
+│   └── query-catalog.json
+├── scripts/
+│   └── validate_catalog.py
+└── .github/
+    ├── CODEOWNERS
+    ├── ISSUE_TEMPLATE/
+    ├── PULL_REQUEST_TEMPLATE.md
+    └── workflows/
 ```
 
-## Example intent
+## Safety-by-design validation
 
-```yaml
-id: H4D-QRY-0001
-objective: authorized_https_inventory
-scope_required: true
-constraints:
-  port: 443
-  tls: true
+The repository CI validates that:
+
+- every catalog entry references an existing intent;
+- intent IDs are unique and correctly formatted;
+- `scope_required` is always `true`;
+- repository example IPv4 values stay inside RFC 5737 documentation ranges;
+- example domains use `example.com`;
+- vendor confidence values are explicit;
+- adapter sources use HTTPS primary references;
+- catalog vendor declarations match the intent adapters;
+- Markdown and JSON documents are structurally valid.
+
+Run locally:
+
+```bash
+python scripts/validate_catalog.py
 ```
 
-A platform adapter can then document a safe representation using a fictional organization or documentation-only network.
+## Vendor adapters
 
-## Design principles
+- [`adapters/shodan/README.md`](adapters/shodan/README.md)
+- [`adapters/fofa/README.md`](adapters/fofa/README.md)
+- [`adapters/binaryedge/README.md`](adapters/binaryedge/README.md)
 
-- authorization before discovery;
-- no real third-party targets in examples;
-- platform syntax validated against primary sources;
-- semantics documented, not guessed;
-- attribution is separate from observation;
-- observation is separate from finding;
-- no exploitation or authentication workflow;
-- reproducible examples and machine-readable metadata;
-- analyst review before any security conclusion.
+See [`docs/vendor-semantics.md`](docs/vendor-semantics.md) for translation-confidence policy.
+
+## Scope and interpretation
+
+Relationship is not ownership. Ownership is not authorization. An indexed service is an observation, not proof of vulnerability, exploitability, compromise, or current state.
+
+See [`docs/scope-and-authorization.md`](docs/scope-and-authorization.md).
 
 ## Developers wanted
 
-**Developers, OSINT researchers, EASM practitioners, security engineers, technical writers, and maintainers of Internet-intelligence tooling are invited to help build the Atlas professionally.**
+**Developers, OSINT researchers, EASM practitioners, security engineers, technical writers, data-model designers, and maintainers of Internet-intelligence tooling are invited to help build the Atlas professionally.**
 
-High-value contributions include:
+Priority contribution areas:
 
-- validating vendor syntax against official documentation;
-- documenting semantic differences between platforms;
-- adding defensive query intents;
-- building schemas and static validation tooling;
-- creating documentation-safe examples;
-- improving adapters, tests, CI, and analyst documentation;
-- reviewing false-positive and attribution risks.
+- primary-source validation of vendor syntax;
+- new defensive query intents;
+- vendor-semantic corrections;
+- schemas and validation tooling;
+- safe fixtures/examples;
+- adapters and portability testing;
+- attribution and false-positive analysis;
+- CI/CD and documentation improvements.
+
+Read [`DEVELOPERS.md`](DEVELOPERS.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md) before contributing.
 
 Accepted contributors receive credit through Git history, pull requests, release notes, and acknowledgments where appropriate. **Original authorship, project ownership, and primary maintenance remain attributed to Chris Cruz | h4ckd4d.**
 
 ## Project ecosystem
-
-The intended Project h4ckd4d defensive engineering stack is:
 
 ```text
 Internet Exposure Query Atlas
@@ -149,7 +180,7 @@ Protect. Detect. Defend.
 
 ## License
 
-The project will be maintained as an open collaboration with clear attribution and responsible-use boundaries.
+Released under the MIT License. See [`LICENSE`](LICENSE).
 
 ---
 

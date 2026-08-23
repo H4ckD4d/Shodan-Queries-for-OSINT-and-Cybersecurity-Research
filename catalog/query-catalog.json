@@ -1,0 +1,16 @@
+{
+  "project": "h4ckd4d Internet Exposure Query Atlas",
+  "owner": "Chris Cruz | h4ckd4d",
+  "version": "1.0.0-rc.1",
+  "updated": "2026-08-23",
+  "intents": [
+    {
+      "id": "H4D-QRY-0001",
+      "path": "intents/asset-inventory/authorized-https-inventory.json",
+      "objective": "authorized_https_inventory",
+      "status": "experimental",
+      "category": "asset-inventory",
+      "vendors": ["shodan", "fofa", "binaryedge"]
+    }
+  ]
+}

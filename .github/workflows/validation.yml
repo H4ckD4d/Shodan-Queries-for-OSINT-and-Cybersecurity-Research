@@ -1,0 +1,37 @@
+name: Query Atlas Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, query-atlas-v1]
+
+permissions:
+  contents: read
+
+jobs:
+  repository-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate query catalog
+        run: python scripts/validate_catalog.py
+      - name: Validate JSON documents
+        run: python -m json.tool catalog/query-catalog.json > /dev/null && python -m json.tool schemas/query-intent.schema.json > /dev/null && python -m json.tool intents/asset-inventory/authorized-https-inventory.json > /dev/null
+
+  documentation-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Lint Markdown
+        run: npx --yes markdownlint-cli2 "**/*.md" "#node_modules"
